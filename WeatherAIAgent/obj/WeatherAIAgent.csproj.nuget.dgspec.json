@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Projects\\Code\\Learn\\WeatherAIAgent\\WeatherAIAgent.csproj": {}
+    "C:\\Projects\\Code\\Learn\\WeatherAI\\WeatherAIAgent.csproj": {}
   },
   "projects": {
-    "C:\\Projects\\Code\\Learn\\WeatherAIAgent\\WeatherAIAgent.csproj": {
+    "C:\\Projects\\Code\\Learn\\WeatherAI\\WeatherAIAgent.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Projects\\Code\\Learn\\WeatherAIAgent\\WeatherAIAgent.csproj",
+        "projectUniqueName": "C:\\Projects\\Code\\Learn\\WeatherAI\\WeatherAIAgent.csproj",
         "projectName": "WeatherAIAgent",
-        "projectPath": "C:\\Projects\\Code\\Learn\\WeatherAIAgent\\WeatherAIAgent.csproj",
+        "projectPath": "C:\\Projects\\Code\\Learn\\WeatherAI\\WeatherAIAgent.csproj",
         "packagesPath": "C:\\Users\\ruslangaliev\\.nuget\\packages\\",
-        "outputPath": "C:\\Projects\\Code\\Learn\\WeatherAIAgent\\obj\\",
+        "outputPath": "C:\\Projects\\Code\\Learn\\WeatherAI\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

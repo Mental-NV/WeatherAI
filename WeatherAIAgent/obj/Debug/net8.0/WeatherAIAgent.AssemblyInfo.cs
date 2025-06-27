@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WeatherAIAgent")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d7bc80b0bf91e4d74ce129415f9a5ec965da91e9")]
 [assembly: System.Reflection.AssemblyProductAttribute("WeatherAIAgent")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WeatherAIAgent")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
