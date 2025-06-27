@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather AI Agent Demo</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #74b9ff;
+        }
+        
+        button {
+            background: #0984e3;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background: #2d3436;
+        }
+        
+        button:disabled {
+            background: #b2bec3;
+            cursor: not-allowed;
+        }
+        
+        .response-container {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #74b9ff;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #636e72;
+        }
+        
+        .error {
+            background: #ffe0e0;
+            border-left-color: #e17055;
+            color: #d63031;
+        }
+        
+        .examples {
+            background: #f1f2f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .examples h3 {
+            margin-top: 0;
+            color: #2d3436;
+        }
+        
+        .example-query {
+            background: white;
+            padding: 8px 12px;
+            margin: 5px 0;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border: 1px solid #ddd;
+        }
+        
+        .example-query:hover {
+            background: #74b9ff;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌤️ Weather AI Agent Demo</h1>
+        
+        <div class="input-group">
+            <label for="apiUrl">API Base URL:</label>
+            <input type="text" id="apiUrl" value="https://localhost:7000" placeholder="Enter API base URL">
+        </div>
+        
+        <div class="examples">
+            <h3>📝 Example Queries (click to try):</h3>
+            <div class="example-query" onclick="setQuery(&quot;What's the weather in New York?&quot;)">
+                What's the weather in New York?
+            </div>
+            <div class="example-query" onclick="setQuery(&quot;How's the weather in London today?&quot;)">
+                How's the weather in London today?
+            </div>
+            <div class="example-query" onclick="setQuery(&quot;Tell me about the current weather in Tokyo, Japan&quot;)">
+                Tell me about the current weather in Tokyo, Japan
+            </div>
+            <div class="example-query" onclick="setQuery(&quot;Is it raining in Paris right now?&quot;)">
+                Is it raining in Paris right now?
+            </div>
+            <div class="example-query" onclick="setQuery(&quot;What's the temperature in Sydney?&quot;)">
+                What's the temperature in Sydney?
+            </div>
+        </div>
+        
+        <div class="input-group">
+            <label for="weatherQuery">Your Weather Question:</label>
+            <input type="text" id="weatherQuery" placeholder="Ask me about the weather in any city..." 
+                   onkeypress="if(event.key==='Enter') queryWeather()">
+        </div>
+        
+        <button onclick="queryWeather()" id="queryButton">🤖 Ask AI Agent</button>
+        
+        <div id="response" style="display: none;"></div>
+    </div>
+
+    <script>
+        function setQuery(query) {
+            document.getElementById('weatherQuery').value = query;
+        }
+        
+        async function queryWeather() {
+            const queryInput = document.getElementById('weatherQuery');
+            const apiUrlInput = document.getElementById('apiUrl');
+            const responseDiv = document.getElementById('response');
+            const queryButton = document.getElementById('queryButton');
+            
+            const query = queryInput.value.trim();
+            const apiUrl = apiUrlInput.value.trim();
+            
+            if (!query) {
+                alert('Please enter a weather question!');
+                return;
+            }
+            
+            if (!apiUrl) {
+                alert('Please enter the API URL!');
+                return;
+            }
+            
+            // Show loading state
+            responseDiv.innerHTML = '<div class="loading">🤖 AI is thinking... Please wait</div>';
+            responseDiv.style.display = 'block';
+            responseDiv.className = 'response-container';
+            queryButton.disabled = true;
+            queryButton.textContent = '⏳ Processing...';
+            
+            try {
+                const response = await fetch(`${apiUrl}/api/weather/query`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ query: query })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    let html = `<h3>🤖 AI Response:</h3><p>${data.response}</p>`;
+                    
+                    if (data.weatherData) {
+                        html += `
+                            <h4>📊 Weather Details:</h4>
+                            <ul>
+                                <li><strong>Location:</strong> ${data.weatherData.city}, ${data.weatherData.country}</li>
+                                <li><strong>Temperature:</strong> ${data.weatherData.temperature}°C (feels like ${data.weatherData.feelsLike}°C)</li>
+                                <li><strong>Condition:</strong> ${data.weatherData.description}</li>
+                                <li><strong>Humidity:</strong> ${data.weatherData.humidity}%</li>
+                                <li><strong>Wind Speed:</strong> ${data.weatherData.windSpeed} m/s</li>
+                                <li><strong>Pressure:</strong> ${data.weatherData.pressure} hPa</li>
+                                <li><strong>Last Updated:</strong> ${new Date(data.weatherData.timestamp).toLocaleString()}</li>
+                            </ul>
+                        `;
+                    }
+                    
+                    responseDiv.innerHTML = html;
+                } else {
+                    responseDiv.innerHTML = `<h3>❌ Error:</h3><p>${data.errorMessage || 'Unknown error occurred'}</p>`;
+                    responseDiv.className = 'response-container error';
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                responseDiv.innerHTML = `
+                    <h3>❌ Connection Error:</h3>
+                    <p>${error.message}</p>
+                    <p><strong>Troubleshooting:</strong></p>
+                    <ul>
+                        <li>Make sure the Weather AI Agent service is running</li>
+                        <li>Check if the API URL is correct</li>
+                        <li>Verify CORS is enabled for development</li>
+                    </ul>
+                `;
+                responseDiv.className = 'response-container error';
+            } finally {
+                queryButton.disabled = false;
+                queryButton.textContent = '🤖 Ask AI Agent';
+            }
+        }
+        
+        // Test connection on page load
+        window.onload = async function() {
+            const apiUrl = document.getElementById('apiUrl').value;
+            try {
+                const response = await fetch(`${apiUrl}/api/weather/health`);
+                if (response.ok) {
+                    console.log('✅ API is reachable');
+                } else {
+                    console.warn('⚠️ API health check failed');
+                }
+            } catch (error) {
+                console.warn('⚠️ Could not connect to API:', error.message);
+            }
+        };
+    </script>
+</body>
+</html>
