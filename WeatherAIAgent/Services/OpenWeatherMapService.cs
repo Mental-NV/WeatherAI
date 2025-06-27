@@ -24,7 +24,9 @@ public class OpenWeatherMapService : IWeatherService
         _logger = logger;
 
         _apiKey = _configuration["OpenWeatherMap:ApiKey"] ?? 
-                  throw new ArgumentException("OpenWeatherMap API key not configured");
+                  _configuration["WheaterApiKey"] ??
+                  Environment.GetEnvironmentVariable("WheaterApiKey") ??
+                  throw new ArgumentException("OpenWeatherMap API key not configured. Set 'WheaterApiKey' environment variable or configure 'OpenWeatherMap:ApiKey' in appsettings.");
         
         _baseUrl = _configuration["OpenWeatherMap:BaseUrl"] ?? 
                    "https://api.openweathermap.org/data/2.5";
