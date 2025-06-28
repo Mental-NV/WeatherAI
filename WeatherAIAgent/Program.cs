@@ -47,9 +47,18 @@ builder.Services.AddScoped<Kernel>(serviceProvider =>
     var kernelBuilder = Kernel.CreateBuilder();
     
     // Configure Azure OpenAI
-    var endpoint = configuration["AzureOpenAI:Endpoint"];
-    var apiKey = configuration["AzureOpenAI:ApiKey"];
-    var deploymentName = configuration["AzureOpenAI:DeploymentName"];
+    var endpoint = configuration["AzureOpenAI:Endpoint"] ?? 
+                   configuration["AZURE_OPENAI_ENDPOINT"] ??
+                   Environment.GetEnvironmentVariable("AZURE_OPENAI_ENDPOINT");
+                   
+    var apiKey = configuration["AzureOpenAI:ApiKey"] ?? 
+                 configuration["AZURE_OPENAI_API_KEY"] ??
+                 Environment.GetEnvironmentVariable("AZURE_OPENAI_API_KEY");
+                 
+    var deploymentName = configuration["AzureOpenAI:DeploymentName"] ?? 
+                         configuration["AZURE_OPENAI_DEPLOYMENT_NAME"] ??
+                         Environment.GetEnvironmentVariable("AZURE_OPENAI_DEPLOYMENT_NAME") ??
+                         "gpt-4"; // Default fallback
     
     if (!string.IsNullOrEmpty(endpoint) && !string.IsNullOrEmpty(apiKey) && !string.IsNullOrEmpty(deploymentName))
     {
@@ -60,9 +69,21 @@ builder.Services.AddScoped<Kernel>(serviceProvider =>
     }
     else
     {
-        // Fallback configuration for development
-        // Note: In production, ensure proper Azure OpenAI configuration
-        throw new InvalidOperationException("Azure OpenAI configuration is required. Please configure AzureOpenAI settings in appsettings.json or Azure Key Vault.");
+        // Improved error message with environment variable instructions
+        throw new InvalidOperationException(@"Azure OpenAI configuration is required. Please set one of the following:
+
+Environment Variables:
+- AZURE_OPENAI_ENDPOINT: Your Azure OpenAI resource endpoint
+- AZURE_OPENAI_API_KEY: Your Azure OpenAI API key
+- AZURE_OPENAI_DEPLOYMENT_NAME: Your deployment name (optional, defaults to 'gpt-4')
+
+Configuration Files:
+- AzureOpenAI:Endpoint in appsettings.json
+- AzureOpenAI:ApiKey in appsettings.json
+- AzureOpenAI:DeploymentName in appsettings.json
+
+Azure Key Vault:
+- Configure Azure:KeyVault:VaultUri and store secrets there");
     }
     
     return kernelBuilder.Build();
